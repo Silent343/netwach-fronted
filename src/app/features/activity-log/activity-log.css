@@ -1,0 +1,88 @@
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.log-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.dot.new {
+  background: var(--accent-new);
+}
+
+.dot.offline {
+  background: var(--accent-danger);
+}
+
+.dot.reconnected {
+  background: var(--accent);
+}
+
+.log-mac {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  width: 150px;
+  flex-shrink: 0;
+}
+
+.log-type {
+  flex: 1;
+}
+
+.log-details { color: var(--text-secondary); font: 11px var(--font-mono); }
+
+.log-time {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 640px) {
+  .presence-head, .activity-head, .filters { flex-direction: column; }
+  .filters { width: 100%; }
+  .filters input, .filters select { width: 100%; }
+  .log-row { flex-wrap: wrap; }
+  .log-time { margin-left: 18px; }
+}
+.presence,
+.activity {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.activity { margin-top: 16px; }
+.presence-head, .activity-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+.eyebrow { margin: 0 0 3px; color: var(--accent); font: 10px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+h2 { margin: 0; font-size: 16px; }
+.presence-value { color: var(--accent); font: 12px var(--font-mono); }
+.chart { height: 120px; display: flex; align-items: end; gap: 3px; margin-top: 18px; border-bottom: 1px solid var(--border); }
+.bar-wrap { flex: 1; min-width: 3px; height: 100%; display: flex; align-items: end; }
+.bar { width: 100%; background: linear-gradient(180deg, var(--accent), rgba(62, 213, 152, .2)); border-radius: 2px 2px 0 0; }
+.chart-empty { color: var(--text-secondary); font-size: 13px; margin: 24px 0 6px; }
+.filters { display: flex; gap: 8px; }
+.filters input, .filters select { background: var(--surface-raised); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; padding: 7px 8px; font-size: 12px; }

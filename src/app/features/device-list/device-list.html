@@ -1,0 +1,12 @@
+@if (devices().length === 0) {
+  <div class="empty">
+    <p class="empty-title">todavía no hay dispositivos</p>
+    <p class="empty-hint">el primer escaneo puede tardar unos segundos</p>
+  </div>
+} @else {
+  <div class="grid">
+    @for (device of devices(); track device.mac_address) {
+      <app-device-card [device]="device" [lastDisconnect]="lastDisconnect(device.mac_address)" (update)="deviceUpdate.emit($event)" />
+    }
+  </div>
+}

@@ -1,0 +1,52 @@
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark"></span>
+    <span>netwatch</span>
+  </div>
+
+  <div class="status">
+    <span class="status-dot" [class.online]="live.status() === 'open'"></span>
+    <span>{{ statusLabel() }}</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-value">{{ deviceCount() }}</span>
+      <span class="stat-label">dispositivos</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value online-value">{{ onlineCount() }}</span>
+      <span class="stat-label">online</span>
+    </div>
+    <div class="stat" [class.offline-alert]="offlineCount() > 0">
+      <span class="stat-value">{{ offlineCount() }}</span>
+      <span class="stat-label">desconectados</span>
+    </div>
+    <div class="stat" [class.alert]="unconfirmedCount() > 0">
+      <span class="stat-value">{{ unconfirmedCount() }}</span>
+      <span class="stat-label">pendientes</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab" [class.active]="activeTab() === 'devices'" (click)="setTab('devices')">
+    dispositivos
+  </button>
+  <button class="tab" [class.active]="activeTab() === 'topology'" (click)="setTab('topology')">
+    topología
+  </button>
+  <button class="tab" [class.active]="activeTab() === 'activity'" (click)="setTab('activity')">
+    actividad
+  </button>
+</nav>
+
+<main class="content">
+  @if (activeTab() === 'devices') {
+    <app-device-list [devices]="devices()" [events]="events()" (deviceUpdate)="onDeviceUpdate($event)" />
+  } @else if (activeTab() === 'topology') {
+    <app-network-topology [devices]="devices()" />
+  } @else {
+    <app-activity-log [events]="events()" [presence]="presence()" />
+  }
+</main>

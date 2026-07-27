@@ -1,0 +1,59 @@
+<section class="presence" aria-labelledby="presence-title">
+  <div class="presence-head">
+    <div>
+      <p class="eyebrow">últimos escaneos</p>
+      <h2 id="presence-title">Presencia en la red</h2>
+    </div>
+    @if (presence().length) {
+      <span class="presence-value">{{ presence()[presence().length - 1].online_count }}/{{ presence()[presence().length - 1].device_count }} online</span>
+    }
+  </div>
+  @if (presence().length) {
+    <div class="chart" aria-label="Gráfica de dispositivos online por escaneo">
+      @for (snapshot of presence(); track snapshot.timestamp) {
+        <div class="bar-wrap" [title]="formatTime(snapshot.timestamp) + ': ' + snapshot.online_count + ' de ' + snapshot.device_count + ' online'">
+          <i class="bar" [style.height.%]="barHeight(snapshot)"></i>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="chart-empty">la gráfica se llenará después de los próximos escaneos</p>
+  }
+</section>
+
+<section class="activity" aria-labelledby="activity-title">
+  <div class="activity-head">
+    <div>
+      <p class="eyebrow">historial</p>
+      <h2 id="activity-title">Cambios detectados</h2>
+    </div>
+    <div class="filters">
+      <input type="search" placeholder="filtrar por MAC o IP" (input)="onSearch($event)" />
+      <select (change)="onTypeFilter($event)" aria-label="Filtrar por estado">
+        <option value="all">todos</option>
+        <option value="new_device">nuevos</option>
+        <option value="offline">desconectados</option>
+        <option value="reconnected">reconectados</option>
+        <option value="ip_changed">cambios de IP</option>
+      </select>
+    </div>
+  </div>
+
+@if (filteredEvents().length === 0) {
+  <div class="empty">
+    <p>sin actividad para este filtro</p>
+  </div>
+} @else {
+  <ul class="log">
+    @for (event of filteredEvents(); track event.id) {
+      <li class="log-row">
+        <span class="dot" [class.new]="event.event_type === 'new_device'" [class.offline]="event.event_type === 'offline'" [class.reconnected]="event.event_type === 'reconnected'"></span>
+        <span class="log-mac">{{ event.mac_address }}</span>
+        <span class="log-type">{{ label(event.event_type) }}</span>
+        @if (event.details) { <span class="log-details">{{ event.details }}</span> }
+        <span class="log-time">{{ formatTime(event.timestamp) }}</span>
+      </li>
+    }
+  </ul>
+}
+</section>
