@@ -23,6 +23,8 @@ export class ApiService {
 
   updateDevice(mac: string, payload: {
     alias?: string | null;
+    model_override?: string | null;
+    type_override?: Device['type_override'];
     review_status?: Device['review_status'];
     silenced_until?: string | null;
   }) {

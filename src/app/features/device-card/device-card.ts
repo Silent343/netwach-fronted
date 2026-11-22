@@ -1,5 +1,6 @@
 import { Component, input, output, signal } from '@angular/core';
-import { Device, DeviceUpdate } from '../../core/models';
+import { deviceName, deviceType, deviceVendor } from '../../core/device-identity';
+import { Device, deviceTypes, DeviceType, DeviceUpdate } from '../../core/models';
 
 @Component({
   selector: 'app-device-card',
@@ -11,21 +12,25 @@ export class DeviceCard {
   readonly lastDisconnect = input<string | null>(null);
   readonly update = output<DeviceUpdate>();
 
-  protected readonly editingAlias = signal(false);
-  protected readonly aliasDraft = signal('');
+  protected readonly editing = signal(false);
+  protected readonly name = deviceName;
+  protected readonly type = deviceType;
+  protected readonly vendor = deviceVendor;
+  protected readonly typeOptions = Object.entries(deviceTypes);
 
-  protected startEditAlias(): void {
-    this.aliasDraft.set(this.device().alias ?? '');
-    this.editingAlias.set(true);
-  }
-
-  protected saveAlias(): void {
-    this.update.emit({ mac: this.device().mac_address, alias: this.aliasDraft().trim() || null });
-    this.editingAlias.set(false);
+  protected saveIdentity(event: SubmitEvent, alias: string, model: string, type: string): void {
+    event.preventDefault();
+    this.update.emit({
+      mac: this.device().mac_address,
+      alias: alias.trim() || null,
+      modelOverride: model.trim() || null,
+      typeOverride: (type || null) as DeviceType | null,
+    });
+    this.editing.set(false);
   }
 
   protected cancelEdit(): void {
-    this.editingAlias.set(false);
+    this.editing.set(false);
   }
 
   protected toggleTrusted(): void {
@@ -44,26 +49,24 @@ export class DeviceCard {
   }
 
   protected typeLabel(type: string): string {
-    return {
-      router: 'router', printer: 'impresora', tv: 'TV', mobile: 'móvil', computer: 'computadora',
-      speaker: 'altavoz', camera: 'cámara', iot: 'IoT', unknown: 'dispositivo',
-    }[type] ?? ' - ';
+    return deviceTypes[type as DeviceType] ?? 'Dispositivo';
   }
 
-  protected modelLabel(): string {
-    const device = this.device();
-    return device.alias || device.hostname || ` ${device.mac_address.slice(-8)}`;
+  protected model(): string | null {
+    return this.device().model_override || this.device().device_model || null;
   }
-  
 
+  protected nameSourceLabel(): string {
+    const source = this.device().name_source;
+    if (source) {
+      return { upnp: 'UPnP', mdns: 'mDNS', dhcp: 'DHCP', reverse_dns: 'DNS inverso', local: 'Equipo local' }[source];
+    }
+    return this.vendor(this.device()) ? 'Fabricante (MAC)' : 'MAC';
+  }
 
   protected isSilenced(): boolean {
     const until = this.device().silenced_until;
     return !!until && new Date(until).getTime() > Date.now();
-  }
-
-  protected onAliasInput(event: Event): void {
-    this.aliasDraft.set((event.target as HTMLInputElement).value);
   }
 
   protected relativeTime(iso: string): string {

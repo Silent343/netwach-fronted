@@ -22,6 +22,7 @@ export class App implements OnInit {
   protected readonly events = signal<ScanEvent[]>([]);
   protected readonly presence = signal<PresenceSnapshot[]>([]);
   protected readonly activeTab = signal<Tab>('devices');
+  protected readonly deviceUpdateError = signal(false);
 
   protected readonly deviceCount = computed(() => this.devices().length);
   protected readonly onlineCount = computed(() => this.devices().filter((d) => d.is_online).length);
@@ -62,16 +63,22 @@ export class App implements OnInit {
   }
 
   protected onDeviceUpdate(update: DeviceUpdate): void {
+    this.deviceUpdateError.set(false);
     this.api
       .updateDevice(update.mac, {
         ...(update.alias !== undefined ? { alias: update.alias } : {}),
+        ...(update.modelOverride !== undefined ? { model_override: update.modelOverride } : {}),
+        ...(update.typeOverride !== undefined ? { type_override: update.typeOverride } : {}),
         ...(update.reviewStatus !== undefined ? { review_status: update.reviewStatus } : {}),
         ...(update.silenceHours !== undefined
           ? { silenced_until: new Date(Date.now() + update.silenceHours * 3_600_000).toISOString() }
           : {}),
       })
-      .subscribe((updated) => {
-        this.devices.update((list) => list.map((d) => (d.mac_address === updated.mac_address ? updated : d)));
+      .subscribe({
+        next: (updated) => {
+          this.devices.update((list) => list.map((d) => (d.mac_address === updated.mac_address ? updated : d)));
+        },
+        error: () => this.deviceUpdateError.set(true),
       });
   }
 

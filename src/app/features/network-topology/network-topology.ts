@@ -1,5 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { Device } from '../../core/models';
+import { deviceName, deviceType } from '../../core/device-identity';
 
 interface TopologyNode {
   device: Device;
@@ -33,9 +34,8 @@ export class NetworkTopology {
 
   protected readonly onlineCount = computed(() => this.devices().filter((d) => d.is_online).length);
 
-  protected label(device: Device): string {
-    return device.alias || device.hostname || device.vendor || device.ip_address;
-  }
+  protected readonly label = deviceName;
+  protected readonly type = deviceType;
 
   protected title(device: Device): string {
     const state = device.is_online ? 'online' : 'desconectado';

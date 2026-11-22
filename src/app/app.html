@@ -43,6 +43,9 @@
 
 <main class="content">
   @if (activeTab() === 'devices') {
+    @if (deviceUpdateError()) {
+      <p role="alert">No se pudieron guardar los cambios del dispositivo. Intenta de nuevo.</p>
+    }
     <app-device-list [devices]="devices()" [events]="events()" (deviceUpdate)="onDeviceUpdate($event)" />
   } @else if (activeTab() === 'topology') {
     <app-network-topology [devices]="devices()" />

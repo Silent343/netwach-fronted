@@ -1,3 +1,17 @@
+export const deviceTypes = {
+  laptop: 'Laptop',
+  computer: 'Computadora',
+  mobile: 'Celular',
+  tv: 'TV',
+  router: 'Router',
+  printer: 'Impresora',
+  speaker: 'Altavoz',
+  camera: 'Cámara',
+  iot: 'IoT',
+} as const;
+
+export type DeviceType = keyof typeof deviceTypes;
+
 export interface Device {
   mac_address: string;
   ip_address: string;
@@ -9,7 +23,10 @@ export interface Device {
   review_status: 'pending' | 'trusted' | 'blocked';
   silenced_until: string | null;
   device_type: string;
-  name_source: 'mdns' | 'dhcp' | 'reverse_dns' | null;
+  name_source: 'mdns' | 'dhcp' | 'reverse_dns' | 'local' | 'upnp' | null;
+  device_model?: string | null;
+  model_override?: string | null;
+  type_override?: DeviceType | null;
   first_seen: string;
   last_seen: string;
 }
@@ -25,6 +42,8 @@ export interface ScanEvent {
 export interface DeviceUpdate {
   mac: string;
   alias?: string | null;
+  modelOverride?: string | null;
+  typeOverride?: DeviceType | null;
   reviewStatus?: Device['review_status'];
   silenceHours?: number;
 }
